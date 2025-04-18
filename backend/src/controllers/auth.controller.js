@@ -1,3 +1,4 @@
+import { json } from "express"
 import { generateToken } from "../lib/utils.js"
 import User from "../models/user.model.js"
 import bcrypt from 'bcryptjs'
@@ -7,7 +8,7 @@ export const signup = async (req, resp) => {
     try {
         // hash password
 
-        if(!fullName || !email || !password){
+        if (!fullName || !email || !password) {
             return resp.status(400).json({ message: 'All fields are required' })
         }
         if (password.length < 6) {
@@ -46,12 +47,36 @@ export const signup = async (req, resp) => {
 
     } catch (error) {
         console.log('Error in signup controller', error.message)
-        resp.status(500).json({message: 'Internal server error'})
+        resp.status(500).json({ message: 'Internal server error' })
     }
 }
 
-export const login = (req, resp) => {
-    resp.send('login route')
+export const login = async (req, resp) => {
+    const { email, password } = req.body
+    try {
+        const user = await User.findOne(email)
+
+        if (!user) {
+            return resp.status(400).json({ message: 'Invalid credentails' })
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password)
+        if (!isPasswordCorrect) {
+            return resp.status(400).json({ message: 'Invalid credentails' })
+        }
+        generateToken(user._id, resp)
+
+        resp.status(200).json({
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            profilePic: user.profilePic,
+        })
+
+    } catch (error) {
+        console.log('Error in login controller', error.message)
+        resp.status(500).json({ message: 'Internal Server Error' })
+    }
 }
 
 export const logout = (req, resp) => {
