@@ -54,7 +54,7 @@ export const signup = async (req, resp) => {
 export const login = async (req, resp) => {
     const { email, password } = req.body
     try {
-        const user = await User.findOne(email)
+        const user = await User.findOne({ email })
 
         if (!user) {
             return resp.status(400).json({ message: 'Invalid credentails' })
@@ -80,5 +80,11 @@ export const login = async (req, resp) => {
 }
 
 export const logout = (req, resp) => {
-    resp.send('logout route')
+    try {
+        resp.cookie('jwt', '', { maxAge: 0 })
+        resp.status(200).json({ message: 'Logged out sucessfully' })
+    } catch (error) {
+        console.log('Error in logout controller', error.message)
+        resp.status(500).json({ message: 'Interal Server Error' })
+    }
 }
