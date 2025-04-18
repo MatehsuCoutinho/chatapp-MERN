@@ -2,6 +2,7 @@ import { json } from "express"
 import { generateToken } from "../lib/utils.js"
 import User from "../models/user.model.js"
 import bcrypt from 'bcryptjs'
+import cloudinary from "../lib/cloudinary.js"
 
 export const signup = async (req, resp) => {
     const { fullName, email, password } = req.body
@@ -86,5 +87,26 @@ export const logout = (req, resp) => {
     } catch (error) {
         console.log('Error in logout controller', error.message)
         resp.status(500).json({ message: 'Interal Server Error' })
+    }
+}
+
+export const updateProfile = async (req, resp) => {
+    try {
+        const { profilePic } = req.body
+        const userId = req.user._id
+
+        if (!profilePic) {
+            return resp.status(400), json({ message: 'Profile pic is required' })
+        }
+
+        const uploadResponse = await cloudinary.uploader.upload(profilePic)
+        const updatedUser = await User.findById(userId, { profilePic: uploadResponse.secure_url }, { new: true })
+
+        resp.status(200).json(updatedUser)
+
+
+    } catch (error) {
+        console.log('Error in update profile', error)
+        resp.status(500).json({ message: 'Internal Server Error' })
     }
 }
