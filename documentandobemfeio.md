@@ -24,3 +24,7 @@ chamei a proxima funcao(nesse caso dar update no profile)
 
 -fiz a rota para as mensagens, depois o schema, depois o controller
 -ficou faltando usar socket.io para fazer mensagem em tempo real// vou fazer mais tarde
+
+-iniciei o front 
+-pequenas correcoes + ajustes no back (authcontroller(faltava adicionar um check para ver se tinha autenticacao))
+-comecei as rotas do front(falta mt coisa tem muitos erros estou perdido)

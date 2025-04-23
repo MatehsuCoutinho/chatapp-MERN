@@ -26,7 +26,7 @@ export const protectRoute = async (req, resp) => {
         next()
 
     } catch (error) {
-        HTMLFormControlsCollection.log('Error in protectRoute middleware', error.message)
+        console.log('Error in protectRoute middleware', error.message)
         resp.status(500).json({ message: 'Internal Server Error' })
     }
 }
